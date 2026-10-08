@@ -74,8 +74,9 @@ class PLTools(metaclass=LogBase):
             self.info(f"Couldn't open {filename} for reading.")
             return False
 
-        ack = self.exploit.runpayload(payload, ack, addr, dontack)
-        if ack == ack:
+        expected_ack = ack
+        ack = self.exploit.runpayload(payload, expected_ack, addr, dontack)
+        if ack == expected_ack:
             self.info(f"Successfully sent payload: {filename}")
             self.mtk.daloader.patch = True
             return True
