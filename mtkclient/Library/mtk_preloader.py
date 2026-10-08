@@ -575,17 +575,20 @@ class Preloader(metaclass=LogBase):
                 self.error(f"Jump_DA Resp2 {str(e)} ," + hexlify(data).decode('utf-8'))
                 self.config.set_gui_status(self.config.tr("DA Error"))
                 return False
-            if resaddr == addr:
-                try:
-                    status = self.rword()
-                except Exception as e:
-                    self.error(f"Jump_DA No data available {str(e)} ," + hexlify(data).decode('utf-8'))
-                    self.config.set_gui_status(self.config.tr("DA Error"))
-                    return False
-                if status == 0:
-                    self.info(f"Jumping to {hex(addr)}: ok.")
-                    self.config.set_gui_status(self.config.tr(f"Jumping to {hex(addr)}: ok."))
-                    return True
+            if resaddr != addr:
+                self.error(f"Jump_DA address error: expected {hex(addr)}, received {hex(resaddr)}")
+                self.config.set_gui_status(self.config.tr("DA Error"))
+                return False
+            try:
+                status = self.rword()
+            except Exception as e:
+                self.error(f"Jump_DA No data available {str(e)} ," + hexlify(data).decode('utf-8'))
+                self.config.set_gui_status(self.config.tr("DA Error"))
+                return False
+            if status == 0:
+                self.info(f"Jumping to {hex(addr)}: ok.")
+                self.config.set_gui_status(self.config.tr(f"Jumping to {hex(addr)}: ok."))
+                return True
             self.error(f"Jump_DA status error:{self.eh.status(status)}")
             self.config.set_gui_status(self.config.tr("DA Error"))
         return False
